@@ -6,6 +6,7 @@ from pynput import keyboard
 DOT_DURATION: float = 0.2
 DASH_DURATION: float = 0.6
 WORD_BREAK_TIME: float = 1.5
+INPUT_TIMEOUT: float = 2.0
 
 # キー入力の開始時間
 press_start_time: Optional[float] = None
@@ -13,7 +14,8 @@ press_start_time: Optional[float] = None
 morse_code_buffer: str = ''
 # 最後の入力時間
 last_input_time: float = time.time()
-
+# 現在の時間
+current_time: float = time.time()
 
 # キー入力の開始時間を記録
 def on_press(key: keyboard.Key) -> bool:
@@ -38,11 +40,11 @@ def on_release(key: keyboard.Key) -> None:
         press_duration = last_input_time - press_start_time
 
         if press_duration < DOT_DURATION:
-            print('.')
-            morse_code_buffer += '.'
+            print('・')
+            morse_code_buffer += '・'
         elif press_duration >= DASH_DURATION:
-            print('-')
-            morse_code_buffer += '-'
+            print('－')
+            morse_code_buffer += '－'
 
         # 次の入力のために初期化
         press_start_time = None
@@ -51,7 +53,7 @@ def on_release(key: keyboard.Key) -> None:
 
 
 def check_word_break_needed() -> None:
-    global morse_code_buffer, last_input_time
+    global morse_code_buffer, last_input_time, current_time
     current_time = time.time()
 
     if (current_time - last_input_time) > WORD_BREAK_TIME:
@@ -68,7 +70,15 @@ def get_key_info() -> None:
 
     try:
         while listener.running:
+            
+            # print('last_input_time - current_time:', current_time - last_input_time, (current_time - last_input_time) > INPUT_TIMEOUT)
+            if (current_time - last_input_time) > INPUT_TIMEOUT:
+                listener.stop()
+                break
+
             check_word_break_needed()
-            time.sleep(0.1)
+        
+        return morse_code_buffer
+
     except KeyboardInterrupt:
         print('exit morse code decoder...')
