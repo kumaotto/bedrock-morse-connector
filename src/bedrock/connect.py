@@ -5,13 +5,13 @@ MODEL_ID = 'anthropic.claude-3-sonnet-20240229-v1:0'
 MAX_TOKENS = 1000
 
 
-def generate_message(bedrock, system_prompt: str, messages: str) -> str:
+def generate_message(bedrock, system: str, messages: str) -> str:
 
     """
     Bedrockにリクエストを送信し、レスポンスを取得する
 
     :param bedrock: Bedrock APIのクライアント
-    :param system_prompt: システムプロンプト
+    :param system: システムプロンプト
     :param messages: Bedrockに送信するメッセージ
 
     :return: Bedrockからのレスポンス
@@ -21,7 +21,7 @@ def generate_message(bedrock, system_prompt: str, messages: str) -> str:
         {
             'anthropic_version': 'bedrock-2023-05-31',
             'max_tokens': MAX_TOKENS,
-            'system_prompt': system_prompt,
+            'system': system,
             'messages': messages
         }
     )
@@ -50,19 +50,28 @@ def execute_bedrock_api(message: str) -> str:
         system_prompt: str = '''
         
         あなたは通信士です。あなたは、モールス符号を使ってメッセージを送信する訓練を受けています。
-        今、あなたは、モールス符号をデコードされたメッセージを受信しました。デコードされたメッセージを自然言語に変換し、その内容に基づいて返信してください。
+        メッセージを自然言語に変換し、その内容に基づいて返信してください。
         但し、返信は和文モールス符号に変換可能なテキスト、かつ10文字以内である必要があります。
 
+        There are the following restrictions.
+        
+        1. All must be in katakana.
+        2. Must be in declarative form.
+        3. Symbols are not allowed.
+        4. If it exceeds 10 charaters, consider a shorter way to say it.
+        5. No need to respond with "yes" or similar.
+        6. Do not use 'desu/masu' form.
+
         <task>
-        返信を和文モールス符号に変換可能なテキストで返信してください。
+        Respond with an appropriate replay to the recieve message.
 
         以下は出力例です。
         <example id="1">
-        けんきてすか
+        ケ゛ンキテ゛スカ
         </example>
 
         <example id="2">
-        りようかい
+        リヨウカイ
         </example>
 
         </task>

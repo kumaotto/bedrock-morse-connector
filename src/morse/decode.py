@@ -6,7 +6,7 @@ def decode_morse(morse_code: str) -> str:
     """
     和文モールス符号を日本語にデコードする
 
-    :param morse_code: 和文モールス符号 (例: '・－・－・ ・・－')
+    :param morse_code: 和文モールス符号 (例: '.-.-. ..-')
     """
 
     # 両端の空白を削除
