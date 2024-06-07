@@ -109,25 +109,30 @@ def input_morse():
         
     except Exception as e:
         print(f'error occuerd: {e}')
-    
-    finally:
-        GPIO.cleanup()
 
 
 def main():
 
-    morse_code = input_morse()
-    print('Received morse codes:', morse_code)
-    message = decode_morse(morse_code)
-    print('message:', message)
-    bedrock_message = execute_bedrock_api(message)
-    print('response message from bedrock: ', bedrock_message)
-    encode_message = encode_morse(bedrock_message)
-    print('encode_message: ', encode_message)
-    
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(LED_PIN, GPIO.OUT)
-    blink_morse_code(encode_message)
+    try:
+        morse_code = input_morse()
+        print('Received morse codes:', morse_code)
+
+        message = decode_morse(morse_code)
+        print('Decoded message:', message)
+
+        bedrock_message = execute_bedrock_api(message)
+        print('Response message from Bedrock API:', bedrock_message)
+
+        encoded_message = encode_morse(bedrock_message)
+        print('Encoded message:', encoded_message)
+
+        blink_morse_code(encoded_message)
+
+    except Exception as e:
+        print(f'An error occurred while processing Morse code: {e}')
+
+    finally:
+        GPIO.cleanup()
 
 
 if __name__ == '__main__':
